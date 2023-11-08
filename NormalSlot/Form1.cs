@@ -18,6 +18,8 @@ namespace NormalSlot
             public bool stop;//ストップボタンが押されている
             public int count;//カウンター
             public int[] graph;//絵柄
+            public PictureBox pic;
+            //引数に入れたラインの絵柄を返す
             public int ReelGraphNo(int line)
             {
                 if(graph.Length==0)
@@ -43,41 +45,17 @@ namespace NormalSlot
                 reel[i].stop = false;
                 reel[i].count = 0;
                 reel[i].graph = new int[24] { 3,6,1,2,3,2,5,0,2,3,2,4,6,2,3,2,0,5,2,3,2,3,6,1};
-                /*
-                 { 1, 6, 3, 2, 3, 2, 5, 0, 2, 3, 2, 6, 4, 2, 3, 2, 0, 5, 2, 3, 2, 1, 6, 3 };
-                    reel[i].graph[0] = 1;
-                    reel[i].graph[1] = 6;
-                    reel[i].graph[2] = 3;
-                    reel[i].graph[3] = 2;
-                    reel[i].graph[4] = 3;
-                    reel[i].graph[5] = 2;
-                    reel[i].graph[6] = 5;
-                    reel[i].graph[7] = 0;
-                    reel[i].graph[8] = 2;
-                    reel[i].graph[9] = 3;
-                    reel[i].graph[10] = 2;
-                    reel[i].graph[11] = 6;
-                    reel[i].graph[12] = 4;
-                    reel[i].graph[13] = 2;
-                    reel[i].graph[14] = 3;
-                    reel[i].graph[15] = 2;
-                    reel[i].graph[16] = 0;
-                    reel[i].graph[17] = 5;
-                    reel[i].graph[18] = 2;
-                    reel[i].graph[19] = 3;
-                    reel[i].graph[20] = 2;
-                    reel[i].graph[21] = 1;
-                    reel[i].graph[22] = 6;
-                    reel[i].graph[23] = 3;
-                */
             }
+            reel[0].pic = pictureBox1;
+            reel[1].pic = pictureBox2;
+            reel[2].pic = pictureBox3;
             credit = 100;//100枚セット
             label1.Text = credit.ToString();
         }
         private bool isAllStop()
         {
             for (int i = 0; i < reel.Length; i++) {
-                if (!reel[i].active)
+                if (reel[i].active)
                 {
                     return false;
                 }
@@ -96,12 +74,16 @@ namespace NormalSlot
                     num++;
                 }
             }
+            //デバッグ表示
+            label2.Text = reel[0].ReelGraphNo(2).ToString() + reel[1].ReelGraphNo(2).ToString() + reel[2].ReelGraphNo(2).ToString() + "\n" +
+            reel[0].ReelGraphNo(1).ToString() + reel[1].ReelGraphNo(1).ToString() + reel[2].ReelGraphNo(1).ToString() + "\n" +
+            reel[0].ReelGraphNo(0).ToString() + reel[1].ReelGraphNo(0).ToString() + reel[2].ReelGraphNo(0).ToString();
 
             return num;
 
         }
         //リール更新メソッド（関数）
-        private void reelUpdate(ref Reel reel,ref PictureBox pic)
+        private void reelUpdate(ref Reel reel)
         {
             //リールを止めるか否か
             if (reel.stop && reel.count % 4 == 0)
@@ -115,29 +97,25 @@ namespace NormalSlot
             }
             else
             {
-                pic.Top += 16;
+                reel.pic.Top += 16;
                 reel.count++;
-                if (pic.Top > -1197 + 64 * 21)
+                if (reel.pic.Top > -1197 + 64 * 21)
                 {
-                    pic.Top = -1197;
+                    reel.pic.Top = -1197;
                     reel.count = 0;
                 }
             }
         }
         private void timer1_Tick(object sender, EventArgs e)
         {
-            if (reel[0].active)
+            for(int i=0;i<reel.Length;i++)
             {
-                reelUpdate(ref reel[0],ref pictureBox1);
+                if (reel[i].active)
+                {
+                    reelUpdate(ref reel[i]);
+                }
             }
-            if (reel[1].active)
-            {
-                reelUpdate(ref reel[1], ref pictureBox2);
-            }
-            if (reel[2].active)
-            {
-                reelUpdate(ref reel[2], ref pictureBox3);
-            }
+
         }
 
         private void button1_Click(object sender, EventArgs e)
