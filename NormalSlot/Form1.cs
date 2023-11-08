@@ -12,106 +12,85 @@ namespace NormalSlot
 {
     public partial class Form1 : Form
     {
-        bool reel1;//リールが動いているか止まっているか
-        bool reel2;//リールが動いているか止まっているか
-        bool reel3;//リールが動いているか止まっているか
-        bool stop1;//リール１のストップボタンが押されているか
-        bool stop2;//リール２のストップボタンが押されているか
-        bool stop3;//リール３のストップボタンが押されているか
-        int count1;
-        int count2;
-        int count3;
+        struct Reel
+        {
+            public bool active;//動いているか
+            public bool stop;//ストップボタンが押されている
+            public int count;//カウンター
+        }
+        Reel[] reel = new Reel[3];
+
 
         public Form1()
         {
             InitializeComponent();
-            reel1 = false;//リール停止状態
-            reel2 = false;//リール停止状態
-            reel3 = false;//リール停止状態
             timer1.Enabled = true;
-            stop1 = false;//ストップボタン押されていない
-            stop2 = false;//ストップボタン押されていない
-            stop3 = false;//ストップボタン押されていない
-            count1 = 0;
-            count2 = 0;
-            count3 = 0;
-        }
 
-        private void timer1_Tick(object sender, EventArgs e)
+            for(int i=0; i<reel.Length; i++)
+            {
+                reel[i].active = false;
+                reel[i].stop = false;
+                reel[i].count = 0;
+            }
+        }
+        //リール更新メソッド（関数）
+        private void reelUpdate(ref Reel reel,ref PictureBox pic)
         {
             //リールを止めるか否か
-            if(stop1 && count1 % 4 == 0)
+            if (reel.stop && reel.count % 4 == 0)
             {
-                stop1 = false;
-                reel1 = false;
+                reel.stop = false;
+                reel.active = false;
             }
-            if (stop2 && count2 % 4 == 0)
+            else
             {
-                stop2 = false;
-                reel2 = false;
-            }
-            if (stop3 && count3 % 4 == 0)
-            {
-                stop3 = false;
-                reel3 = false;
-            }
-
-
-            if (reel1)
-            {
-                pictureBox1.Top+=16;
-                count1++;
-                if (pictureBox1.Top>-1197+64*21)
+                pic.Top += 16;
+                reel.count++;
+                if (pic.Top > -1197 + 64 * 21)
                 {
-                    pictureBox1.Top = -1197;
-                    count1 = 0;
+                    pic.Top = -1197;
+                    reel.count = 0;
                 }
             }
-            if (reel2)
+        }
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+            if (reel[0].active)
             {
-                pictureBox2.Top+=16;
-                count2++;
-                if (pictureBox2.Top > -1197 + 64 * 21)
-                {
-                    pictureBox2.Top = -1197;
-                    count2 = 0;
-                }
+                reelUpdate(ref reel[0],ref pictureBox1);
             }
-            if (reel3)
+            if (reel[1].active)
             {
-                pictureBox3.Top+=16;
-                count3++;
-                if (pictureBox3.Top > -1197 + 64 * 21)
-                {
-                    pictureBox3.Top = -1197;
-                    count3 = 0;
-                }
+                reelUpdate(ref reel[1], ref pictureBox2);
+            }
+            if (reel[2].active)
+            {
+                reelUpdate(ref reel[2], ref pictureBox3);
             }
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
-            reel1 = true;//リール回転状態
-            reel2 = true;//リール回転状態
-            reel3 = true;//リール回転状態
-            stop1 = false;
-            stop2 = false;
-            stop3 = false;
+            for(int i=0;i<reel.Length;i++)
+            {
+                reel[i].active = true;//リール回転状態
+                reel[i].stop = false;
+            }
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
-            stop1 = true;
+            reel[0].stop = true;
         }
 
         private void button3_Click(object sender, EventArgs e)
         {
-            stop2 = true;
+            reel[1].stop = true;
         }
 
         private void button4_Click(object sender, EventArgs e)
         {
-            stop3 = true;
+            reel[2].stop = true;
         }
     }
 }
