@@ -32,7 +32,7 @@ namespace NormalSlot
         }
         Reel[] reel = new Reel[3];
         int credit;//コイン
-
+        int[] prize = { 3, 5, 5, 7, 30, 50,100 };
         public Form1()
         {
             InitializeComponent();
@@ -62,24 +62,36 @@ namespace NormalSlot
             }
             return true;
         }
-        private int isWinNum()
+        private void pay(int num)
         {
-            int num = 0;
-            if (!isAllStop()) return 0;
+            credit += prize[num];
+            label1.Text = credit.ToString();
+        }
+        private void WinCheck()
+        {
+            if (!isAllStop()) return;
+            //横３列
             for (int i = 0; i < 3; i++)
             {
                 if (reel[0].ReelGraphNo(i) == reel[1].ReelGraphNo(i) &&
                    reel[1].ReelGraphNo(i) == reel[2].ReelGraphNo(i))
                 {
-                    num++;
+                    pay(reel[0].ReelGraphNo(i));
                 }
+            }
+            //斜め
+            if(reel[0].ReelGraphNo(2) == reel[1].ReelGraphNo(1) && reel[1].ReelGraphNo(1) == reel[2].ReelGraphNo(0))
+            {
+                pay(reel[0].ReelGraphNo(2));
+            }
+            if (reel[2].ReelGraphNo(0) == reel[1].ReelGraphNo(1) && reel[1].ReelGraphNo(1) == reel[0].ReelGraphNo(2))
+            {
+                pay(reel[2].ReelGraphNo(0));
             }
             //デバッグ表示
             label2.Text = reel[0].ReelGraphNo(2).ToString() + reel[1].ReelGraphNo(2).ToString() + reel[2].ReelGraphNo(2).ToString() + "\n" +
             reel[0].ReelGraphNo(1).ToString() + reel[1].ReelGraphNo(1).ToString() + reel[2].ReelGraphNo(1).ToString() + "\n" +
             reel[0].ReelGraphNo(0).ToString() + reel[1].ReelGraphNo(0).ToString() + reel[2].ReelGraphNo(0).ToString();
-
-            return num;
 
         }
         //リール更新メソッド（関数）
@@ -90,10 +102,7 @@ namespace NormalSlot
             {
                 reel.stop = false;
                 reel.active = false;
-
-                credit += 10 * isWinNum();
-                label1.Text = credit.ToString();
-                
+                WinCheck();//配当チェック
             }
             else
             {
